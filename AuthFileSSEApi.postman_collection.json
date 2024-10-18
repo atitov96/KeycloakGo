@@ -1,0 +1,404 @@
+{
+	"info": {
+		"_postman_id": "6243e5db-4f7b-43e8-ae5b-1a6eb8a80eec",
+		"name": "AuthFileSSEApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9150292"
+	},
+	"item": [
+		{
+			"name": "Login via keycloak",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.collectionVariables.set(\"accessToken\", jsonData.access_token);",
+							"pm.collectionVariables.set(\"refreshToken\", jsonData.refresh_token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password"
+						},
+						{
+							"key": "client_id",
+							"value": "{{keycloakClientId}}"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{keycloakClientSecret}}"
+						},
+						{
+							"key": "username",
+							"value": "{{keycloakAdminUser}}"
+						},
+						{
+							"key": "password",
+							"value": "{{keycloakAdminPassword}}"
+						},
+						{
+							"key": "scope",
+							"value": "openid profile email",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{keycloakUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token",
+					"host": [
+						"{{keycloakUrl}}"
+					],
+					"path": [
+						"realms",
+						"{{keycloakRealm}}",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login via api facade",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.collectionVariables.set(\"accessToken\", jsonData.access_token);",
+							"pm.collectionVariables.set(\"refreshToken\", jsonData.refresh_token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": {{keycloakAdminUser}},\n    \"password\": {{keycloakAdminPassword}},\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Token",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{keycloakUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/userinfo",
+					"host": [
+						"{{keycloakUrl}}"
+					],
+					"path": [
+						"realms",
+						"{{keycloakRealm}}",
+						"protocol",
+						"openid-connect",
+						"userinfo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Refresh Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"pm.collectionVariables.set(\"accessToken\", jsonData.access_token);",
+							"pm.collectionVariables.set(\"refreshToken\", jsonData.refresh_token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "refresh_token"
+						},
+						{
+							"key": "client_id",
+							"value": "{{keycloakClientId}}"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{keycloakClientSecret}}"
+						},
+						{
+							"key": "refresh_token",
+							"value": "{{refreshToken}}"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{keycloakUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/token",
+					"host": [
+						"{{keycloakUrl}}"
+					],
+					"path": [
+						"realms",
+						"{{keycloakRealm}}",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "refresh_token",
+							"value": "{{refreshToken}}"
+						},
+						{
+							"key": "client_id",
+							"value": "{{keycloakClientId}}"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{keycloakClientSecret}}"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{keycloakUrl}}/realms/{{keycloakRealm}}/protocol/openid-connect/logout",
+					"host": [
+						"{{keycloakUrl}}"
+					],
+					"path": [
+						"realms",
+						"{{keycloakRealm}}",
+						"protocol",
+						"openid-connect",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload File",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{staticToken}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/path/to/test.txt"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/upload",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download File",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/download/test",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"download",
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SSE (Server-Sent Events)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}",
+						"disabled": true
+					},
+					{
+						"key": "Accept",
+						"value": "text/event-stream"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/v1/events",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"events"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000"
+		},
+		{
+			"key": "keycloakUrl",
+			"value": "http://localhost:8180"
+		},
+		{
+			"key": "keycloakRealm",
+			"value": "master"
+		},
+		{
+			"key": "keycloakClientId",
+			"value": "admin-cli"
+		},
+		{
+			"key": "keycloakClientSecret",
+			"value": "12345678-1234-1234-1234-123456789012"
+		},
+		{
+			"key": "keycloakAdminUser",
+			"value": "admin"
+		},
+		{
+			"key": "keycloakAdminPassword",
+			"value": "admin"
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
